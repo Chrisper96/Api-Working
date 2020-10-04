@@ -1,112 +1,65 @@
-﻿using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using WebApplication1.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using WebApplication1.Dtos.Product;
 using WebApplication1.Models;
+using WebApplication1.Services.ProductService;
 
-namespace WebApplication1.Controllers
-{   
+namespace dotnet_rpg.Controllers
+{
+    //[Authorize(Roles = "Player,Admin")]
     [ApiController]
     [Route("[controller]")]
-    public class ProductController : Controller
+    public class ProductController : ControllerBase
     {
-        public ProductController(ShopContext context)
+        private readonly IProductService _productService;
+
+        public ProductController(IProductService productService)
         {
-            _context = context;
+            _productService = productService;
         }
 
-        public ShopContext _context { get; }
-
-        [HttpGet]
-        //[EnableCors("AnotherPolicy")] //Route
-        [Route("GetAll")]
-        public IActionResult GetAllProducts()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> Get()
         {
-            return new JsonResult(_context.Products);
+            return Ok(await _productService.GetAllProducts());
         }
 
-        [HttpGet("{Id}")]
-        public IActionResult GetProdut(int Id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSingle(int id)
         {
-
-            var product = _context.Products;
-
-            var PTeamp = product.FirstOrDefault(p => p.Id == Id);
-
-            if (PTeamp == null)
-            {
-                return HttpNotFound();
-            }
-
-            return new JsonResult(PTeamp);
-
+            return Ok(await _productService.GetProductById(id));
         }
 
-        [HttpPost("post")]
-        public IActionResult PostProduct([FromBody] Product product)
+        [HttpPost]
+        public async Task<IActionResult> AddProduct(AddProductDto newProduct)
         {
-            
-            using (var PostProduct = _context)
-            {
-
-                if (PostProduct != null)
-                {
-                    _context.Products.Add(product);
-                    _context.SaveChanges();
-                    return Ok("Added Product");
-                }
-                else
-                {
-                    return NotFound("Not found");
-                }
-            }
+            return Ok(await _productService.AddProduct(newProduct));
         }
 
         [HttpPut]
-        public IActionResult UpdateProduct([FromBody] Product updatedProduct)
+        public async Task<IActionResult> UpdateProduct(UpdateProductDto updatedProduct)
         {
-                Product product = _context.Products.FirstOrDefault(c => c.Id == updatedProduct.Id);
-                
-                if (product.Id == updatedProduct.Id)
-                {
-                    product.Title = updatedProduct.Title;
-                    product.Description = updatedProduct.Description;
-                    product.Price = updatedProduct.Price;
-
-                    _context.Products.Update(product);
-                    _context.SaveChangesAsync();
-
-                    return Ok("Product updated");
-                }
-                else
-                {
-                    return NotFound("Product not found");
-                }
+            ServiceResponse<GetProductDto> response = await _productService.UpdateProduct(updatedProduct);
+            if (response.Data == null)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
         }
-        
+
         [HttpDelete("{id}")]
-        public IActionResult DeleteProduct(int Id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var DeleteProducts = _context.Products.FirstOrDefault(p => p.Id == Id);
-            if (DeleteProducts != null)
+            ServiceResponse<List<GetProductDto>> response = await _productService.DeleteProduct(id);
+            if (response.Data == null)
             {
-                _context.Products.Remove(DeleteProducts);
-                _context.SaveChanges();
-                return Ok("Removed Product");
+                return NotFound(response);
             }
-            else
-            {
-                return NotFound("Not found");
-            }
-        }
-
-
-        private IActionResult HttpNotFound()
-        {
-            throw new NotImplementedException();
+            return Ok(response);
         }
     }
 }

@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "dxnZXO1xrrnpVZihQjkXwVO0iOFoBqDyWl+K/7Lg7gVA8xk6HL9u2tWFDehiT9uayw/Dg6oro340BlbvG8BRwQ==",
+  "dgSpecHash": "+rstJijg2WBQsccP85z+XLgSfNXJQuWKuQ1tcgRhSPEY5iseKFDjeAOuQXNLs3UQHl598gC32rsyVk76gg860g==",
   "success": true,
   "projectFilePath": "C:\\Users\\chris\\Desktop\\WebApplication1\\WebApplication1\\WebApplication1.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\chris\\.nuget\\packages\\automapper\\9.0.0\\automapper.9.0.0.nupkg.sha512",
+    "C:\\Users\\chris\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\7.0.0\\automapper.extensions.microsoft.dependencyinjection.7.0.0.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\3.1.3\\microsoft.aspnetcore.authentication.jwtbearer.3.1.3.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.1\\microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\microsoft.bcl.hashcode\\1.1.0\\microsoft.bcl.hashcode.1.1.0.nupkg.sha512",
