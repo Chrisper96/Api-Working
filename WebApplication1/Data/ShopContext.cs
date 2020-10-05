@@ -18,6 +18,7 @@ namespace WebApplication1.Data
         {
             optionsBuilder
                 .UseSqlServer("Server=localhost\\SQLEXPRESS; Database=ShopDB; Trusted_Connection=True;");
+            optionsBuilder.EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

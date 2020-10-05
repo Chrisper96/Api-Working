@@ -9,7 +9,7 @@ namespace WebApplication1.Models
     {
         public int Id { get; set; }
         [Required]
-        public int Quantiiy { get; set; }
+        public int Quantity { get; set; }
         [Required]
         public int Price { get; set; }
         public Product Product { get; set; }

@@ -10,7 +10,7 @@ namespace WebApplication1.Models
         public int Id { get; set; }
         [Required]
         public string OrderDate { get; set; }
-        public List<OrderLine> OrderLine { get; set; }
+        public List<OrderLine> OrderLines { get; set; }
         public User User { get; set; }
     }
 }

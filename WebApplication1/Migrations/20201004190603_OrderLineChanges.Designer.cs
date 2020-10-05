@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ShopContext))]
-    partial class ShopContextModelSnapshot : ModelSnapshot
+    [Migration("20201004190603_OrderLineChanges")]
+    partial class OrderLineChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -126,7 +128,7 @@ namespace WebApplication1.Migrations
             modelBuilder.Entity("WebApplication1.Models.OrderLine", b =>
                 {
                     b.HasOne("WebApplication1.Models.Order", "Order")
-                        .WithMany("OrderLines")
+                        .WithMany("OrderLine")
                         .HasForeignKey("OrderId");
 
                     b.HasOne("WebApplication1.Models.Product", "Product")

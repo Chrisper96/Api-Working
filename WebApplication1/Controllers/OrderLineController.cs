@@ -1,93 +1,65 @@
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using WebApplication1.Data;
+using WebApplication1.Dtos.OrderLine;
 using WebApplication1.Models;
+using WebApplication1.Services.OrderLineService;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplication1.Controllers
-{   
+{
+    //[Authorize(Roles = "Player,Admin")]
     [ApiController]
     [Route("[controller]")]
-    public class OrderLineController : Controller
+    public class OrderLineController : ControllerBase
     {
-        public OrderLineController(ShopContext context)
+        private readonly IOrderLineService _orderLineService;
+
+        public OrderLineController(IOrderLineService OrderLineService)
         {
-            _context = context;
+            _orderLineService = OrderLineService;
         }
 
-        public ShopContext _context { get; }
-
-        [HttpGet]
-        //[EnableCors("AnotherPolicy")] //Route
-        [Route("GetAll")]
-        public IActionResult GetAllOrderLines()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> Get()
         {
-            return new JsonResult(_context.OrderLines);
+            return Ok(await _orderLineService.GetAllOrderLines());
         }
 
-        [HttpGet("{Id}")]
-        [EnableCors]
-        public IActionResult GetProdut(int Id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSingle(int id)
         {
+            return Ok(await _orderLineService.GetOrderLineById(id));
+        }
 
-            var orderLine = _context.OrderLines;
+        [HttpPost]
+        public async Task<IActionResult> AddOrderLine(AddOrderLineDto newOrderLine)
+        {
+            return Ok(await _orderLineService.AddOrderLine(newOrderLine));
+        }
 
-            var PTeamp = orderLine.FirstOrDefault(p => p.Id == Id);
-
-            if (PTeamp == null)
+        [HttpPut]
+        public async Task<IActionResult> UpdateOrderLine(UpdateOrderLineDto updateOrderLineDto)
+        {
+            ServiceResponse<GetOrderLineDto> response = await _orderLineService.UpdateOrderLine(updateOrderLineDto);
+            if (response.Data == null)
             {
-                return HttpNotFound();
+                return NotFound(response);
             }
-
-            return new JsonResult(PTeamp);
-
-        }
-
-        [HttpPost("post")]
-        [EnableCors("AnotherPolicy")]
-        public IActionResult PostOrderLine([FromBody] OrderLine orderLine)
-        {
-            
-            using (var PostOrderLine = _context)
-            {
-
-                if (PostOrderLine != null)
-                {
-                    _context.OrderLines.Add(orderLine);
-                    _context.SaveChanges();
-                    return Ok("Added OrderLine");
-                }
-                else
-                {
-                    return NotFound("Not found");
-                }
-            }
+            return Ok(response);
         }
 
         [HttpDelete("{id}")]
-        [EnableCors("AnotherPolicy")]
-        public IActionResult DeleteOrderLine(int Id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var DeleteOrderLines = _context.OrderLines.FirstOrDefault(p => p.Id == Id);
-            if (DeleteOrderLines != null)
+            ServiceResponse<List<GetOrderLineDto>> response = await _orderLineService.DeleteOrderLine(id);
+            if (response.Data == null)
             {
-                _context.OrderLines.Remove(DeleteOrderLines);
-                _context.SaveChanges();
-                return Ok("Removed OrderLine");
+                return NotFound(response);
             }
-            else
-            {
-                return NotFound("Not found");
-            }
-        }
-
-
-        private IActionResult HttpNotFound()
-        {
-            throw new NotImplementedException();
+            return Ok(response);
         }
     }
 }

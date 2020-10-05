@@ -70,17 +70,17 @@ namespace WebApplication1.Services.ProductService
         public async Task<ServiceResponse<List<GetProductDto>>> GetAllProducts()
         {
             ServiceResponse<List<GetProductDto>> serviceResponse = new ServiceResponse<List<GetProductDto>>();
-            List<Product> dbCharacters = await _context.Products.ToListAsync();
-            serviceResponse.Data = (dbCharacters.Select(p => _mapper.Map<GetProductDto>(p))).ToList();
+            List<Product> dbProducts = await _context.Products.ToListAsync();
+            serviceResponse.Data = (dbProducts.Select(p => _mapper.Map<GetProductDto>(p))).ToList();
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetProductDto>> GetProductById(int id)
         {
             ServiceResponse<GetProductDto> serviceResponse = new ServiceResponse<GetProductDto>();
-            Product dbCharacter = await _context.Products
+            Product dbProduct = await _context.Products
                 .FirstOrDefaultAsync(p => p.Id == id && p.Id == id);
-            serviceResponse.Data = _mapper.Map<GetProductDto>(dbCharacter);
+            serviceResponse.Data = _mapper.Map<GetProductDto>(dbProduct);
             return serviceResponse;
         }
 

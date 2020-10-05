@@ -1,103 +1,65 @@
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using WebApplication1.Data;
+using WebApplication1.Dtos.Order;
 using WebApplication1.Models;
-using Microsoft.AspNetCore.Http;
+using WebApplication1.Services.OrderService;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplication1.Controllers
 {
+    //[Authorize(Roles = "Player,Admin")]
     [ApiController]
     [Route("[controller]")]
-    public class OrderController : Controller
+    public class OrderController : ControllerBase
     {
-        // private readonly IHttpContextAccessor _httpContextAccessor;
-        public OrderController(ShopContext context /*, IHttpContextAccessor httpContextAccessor*/)
+        private readonly IOrderService _orderService;
+
+        public OrderController(IOrderService orderService)
         {
-            //_httpContextAccessor = httpContextAccessor;
-            _context = context;
+            _orderService = orderService;
         }
 
-        public ShopContext _context { get; }
-
-
-        //private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-
-        //private string GetUserRole() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
-
-
-        [HttpGet]
-        //[EnableCors("AnotherPolicy")] //Route
-        [Route("GetAll")]
-        public IActionResult GetAllOrders()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> Get()
         {
-            return new JsonResult(_context.Orders);
+            return Ok(await _orderService.GetAllOrders());
         }
 
-        [HttpGet("{Id}")]
-        [EnableCors]
-        public IActionResult GetOrder(int Id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSingle(int id)
         {
+            return Ok(await _orderService.GetOrderById(id));
+        }
 
-            var order = _context.Orders;
+        [HttpPost]
+        public async Task<IActionResult> AddOrder(AddOrderDto newOrder)
+        {
+            return Ok(await _orderService.AddOrder(newOrder));
+        }
 
-            var PTeamp = order.FirstOrDefault(p => p.Id == Id);
-
-            if (PTeamp == null)
+        [HttpPut]
+        public async Task<IActionResult> UpdateOrder(UpdateOrderDto updatedOrder)
+        {
+            ServiceResponse<GetOrderDto> response = await _orderService.UpdateOrder(updatedOrder);
+            if (response.Data == null)
             {
-                return HttpNotFound();
+                return NotFound(response);
             }
-
-            return new JsonResult(PTeamp);
-
-        }
-
-        [HttpPost("post")]
-        //[EnableCors("AnotherPolicy")]
-        public IActionResult PostProduct([FromBody] Order order)
-        {
-
-            using (var PostOrder = _context)
-            {
-
-                if (PostOrder != null)
-                {
-                    _context.Orders.Add(order);
-                    _context.SaveChanges();
-                    return Ok("Added Order");
-                }
-                else
-                {
-                    return NotFound("Not found");
-                }
-            }
+            return Ok(response);
         }
 
         [HttpDelete("{id}")]
-        //[EnableCors("AnotherPolicy")]
-        public IActionResult DeleteProduct(int Id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var DeleteProducts = _context.Orders.FirstOrDefault(p => p.Id == Id);
-            if (DeleteProducts != null)
+            ServiceResponse<List<GetOrderDto>> response = await _orderService.DeleteOrder(id);
+            if (response.Data == null)
             {
-                _context.Orders.Remove(DeleteProducts);
-                _context.SaveChanges();
-                return Ok("Removed Order");
+                return NotFound(response);
             }
-            else
-            {
-                return NotFound("Not found");
-            }
-        }
-
-
-        private IActionResult HttpNotFound()
-        {
-            throw new NotImplementedException();
+            return Ok(response);
         }
     }
 }
