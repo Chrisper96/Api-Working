@@ -10,7 +10,7 @@ using WebApplication1.Services.ProductService;
 
 namespace dotnet_rpg.Controllers
 {
-    //[Authorize(Roles = "Player,Admin")]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class ProductController : ControllerBase
@@ -22,6 +22,7 @@ namespace dotnet_rpg.Controllers
             _productService = productService;
         }
 
+        //[AllowAnonymous]
         [HttpGet("GetAll")]
         public async Task<IActionResult> Get()
         {
