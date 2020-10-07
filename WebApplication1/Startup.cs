@@ -70,11 +70,11 @@ namespace WebApplication1
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseAuthentication();
+            //app.UseAuthentication();
 
             app.UseAuthorization();
 
